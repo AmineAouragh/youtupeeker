@@ -1,115 +1,49 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import Image from "next/image"
+import Head from 'next/head' 
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { BiStats } from "react-icons/bi";
+import { IoStatsChartOutline } from "react-icons/io5";
+import { FaEye } from "react-icons/fa6";
+import { BsPeopleFill } from "react-icons/bs";
+import { FaVideo } from "react-icons/fa";
+import { MdOutlineArrowRight } from "react-icons/md";
+import { GoHeartFill } from "react-icons/go";
+import { FaComment } from "react-icons/fa";
+import { FaFire } from "react-icons/fa6";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export default function Home() {
+
+  const [ handle, setHandle ] = useState('')
+
+  const router = useRouter()
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              pages/index.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Cairo:wght@200..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+        <title>CleanTube</title>
+      </Head>
+      <div className="flex flex-col justify-center items-center w-full h-screen px-3 py-8">
+        <IoStatsChartOutline size={42} className="text-red-500 font-bold" />
+        <h1 className="font-Inter text-3xl md:text-5xl text-center font-bold text-red-500 my-8">Instant YouTube Analytics</h1>
+        <p className="font-Inter text-xl text-center mb-8 text-slate-700 font-semibold">Pull in key analytics of any channel instantly — all in one clean view.</p>
+        <div className="relative flex flex-row w-full md:w-3/4 lg:w-1/3">
+          <input type="text" value={handle} onChange={e => setHandle(e.target.value)} id="channel_id_handle" name="channel_id_handle" className="w-full font-bold text-red-600 relative outline-none px-6 py-4 rounded-full border-4 border-red-500 text-xl font-Inter" placeholder="Type channel handle..." />
+          <button type="button" onClick={() => router.push(`/${handle}`)} className="flex flex-row items-center absolute right-3 top-2.5 rounded-full bg-red-500 hover:bg-red-600 text-white text-2xl font-Inter font-bold px-6 py-2">
+            <span className="mr-2">Analyze</span>
+            <BiStats size={28} />
+          </button>
+        </div> 
+        <div className="mt-8 flex flex-row items-center">
+          <button type="button" onClick={() => fetchChannelStats("MrBeast")} className="rounded-full mr-2 font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">MrBeast</button>
+          <button type="button" onClick={() => fetchChannelStats("theRadBrad")} className="rounded-full mr-2 font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">theRadBrad</button>
+          <button type="button" onClick={() => fetchChannelStats("freecodecamp")} className="rounded-full font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">freecodecamp</button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </>
   );
 }
