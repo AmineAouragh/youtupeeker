@@ -232,14 +232,14 @@ export default function Home() {
         <div className="mt-24 flex flex-col w-full md:w-3/4 md:px-3 items-start justify-center">
           { stats && 
            <div className="flex flex-row items-center mb-5 justify-between w-full">
-             <div className="text-3xl md:text-4xl flex flex-row items-center font-bold text-slate-700">
-              <Image src={imageUrl} alt="" height={60} width={60} className="border-4 border-red-500 rounded-full mr-4" />
+             <div className="text-2xl md:text-4xl flex flex-row items-center font-bold text-slate-700">
+              <Image src={imageUrl} alt="" height={60} width={60} className="border-4 border-red-500 rounded-full mr-2 md:mr-4" />
               <span className="text-red-500">{channelTitle}:</span>
              </div>
               <Link href={`https://youtube.com/${channel_handle}`} target="_blank">
                 <button type="button" className="rounded-3xl px-3 py-2 md:px-6 md:py-4 text-lg md:text-2xl flex flex-row items-center bg-red-500 text-white font-bold font-Inter">
                   <TiSocialYoutubeCircular size={36} />
-                  <span className="md:ml-2">Visit Channel</span>
+                  <span className="md:ml-2">Visit</span>
                 </button>
               </Link>
            </div>
