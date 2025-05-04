@@ -362,13 +362,13 @@ export default function Home() {
                   <FaGrinStars size={26} />
                 </div>
                 <div className="relative flex flex-row items-center mb-4">
-                  <span className="text-xl md:text-3xl text-red-500 font-bold font-Poppins">Most Watched</span>
+                  <span className="text-xl md:text-3xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
                 </div>
                 <p className="relative font-Inter text-red-500 text-xl font-bold">{formatNumber(maxViews)} views</p>
                 <div className="absolute top-2 right-2 rounded-2xl overflow-hidden">
                   <Link title="Watch Video on YouTube" target="_blank" href={`https://youtube.com/watch?v=${mostWatchedVideoId}`} className="text-red-300 flex flex-row items-center group">
                     <TiSocialYoutubeCircular size={30} className="text-red-400 group-hover:text-red-500 mr-1" />
-                    <span className="text-red-400 font-Inter group-hover:text-red-500 font-semibold">Watch</span>
+                    <span className="hidden md:flex text-red-400 font-Inter group-hover:text-red-500 font-semibold">Watch</span>
                   </Link>
                 </div>
               </div>
@@ -381,13 +381,13 @@ export default function Home() {
                   <FaGrinHearts size={26} />
                 </div>
                 <div className="relative flex flex-row items-center mb-4">
-                  <span className="text-xl md:text-3xl text-red-500 font-bold font-Poppins">Most Liked</span>
+                  <span className="text-xl md:text-3xl text-red-500 text-center font-bold font-Poppins">Most Liked</span>
                 </div>
                 <p className="relative font-Inter text-red-500 text-xl font-bold">{formatNumber(maxLikes)} likes</p>
                 <div className="absolute top-2 right-2 rounded-2xl overflow-hidden">
                   <Link title="Watch Video on YouTube" target="_blank" href={`https://youtube.com/watch?v=${mostLikedVideoId}`} className="flex group flex-row items-center text-red-300">
                     <TiSocialYoutubeCircular size={30} className="text-red-400 group-hover:text-red-500 mr-1" />
-                    <span className="text-red-400 font-Inter group-hover:text-red-500 font-semibold">Watch</span>
+                    <span className="hidden md:flex text-red-400 font-Inter group-hover:text-red-500 font-semibold">Watch</span>
                   </Link>
                 </div>
               </div>
