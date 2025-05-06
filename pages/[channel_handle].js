@@ -371,6 +371,9 @@ export default function Home() {
                     <span className="hidden md:flex text-red-400 font-Inter group-hover:text-red-500 font-semibold">Watch</span>
                   </Link>
                 </div>
+                <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                  <span className="text-white font-bold text-sm font-Inter">New</span>
+                </div>
               </div>
             )
           }
@@ -389,6 +392,9 @@ export default function Home() {
                     <TiSocialYoutubeCircular size={30} className="text-red-400 group-hover:text-red-500 mr-1" />
                     <span className="hidden md:flex text-red-400 font-Inter group-hover:text-red-500 font-semibold">Watch</span>
                   </Link>
+                </div>
+                <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                  <span className="text-white font-bold text-sm font-Inter">New</span>
                 </div>
               </div>
             )
