@@ -125,7 +125,6 @@ export default function Home() {
         const idsParam = chunk.join(',');
         const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&part=statistics,contentDetails&id=${idsParam}`); // 1 quota for each batch of 50 videos
         const videoData = await res.json();
-        console.log(videoData)
         videoData.items.forEach(stat => {
           likesArr.push(stat.statistics.likeCount)
           viewsArr.push(stat.statistics.viewCount)
@@ -165,8 +164,6 @@ export default function Home() {
         }
       }
 
-      console.log(ids)
-
       let maxViewsIndex = views.indexOf(max)
       let maxLikesIndex = likes.indexOf(max_like)
 
@@ -174,9 +171,6 @@ export default function Home() {
       setMaxLikes(max_like)
       setMostWatchedVideoId(ids[maxViewsIndex])
       setMostLikedVideoId(ids[maxLikesIndex])
-
-      console.log(`Most watched video got ${max} views. It is the ${maxViewsIndex}th video.`)
-
 
     setNbLikes(totalLikes) 
     setNbComments(totalComments)
@@ -229,7 +223,7 @@ export default function Home() {
           <IoStatsChartOutline size={36} className="text-red-500 font-bold mr-3" />
           <span className="font-Inter text-3xl font-bold text-red-500 mt-2">Youtupeeker</span>
         </Link>
-        <div className="mt-24 flex flex-col w-full md:w-3/4 md:px-3 items-start justify-center">
+        <div className="mt-16 flex flex-col w-full md:w-3/4 md:px-3 items-start justify-center">
           { stats && 
            <div className="flex flex-row items-center mb-5 justify-between w-full">
              <div className="text-2xl md:text-4xl flex flex-row items-center font-bold text-slate-700">
@@ -265,13 +259,13 @@ export default function Home() {
                     key == "videoCount" && <FaVideo size={26} className="text-red-500 mb-3" />
                   }
                   {
-                    key == "viewCount" && <span className="mb-4 text-xl md:text-3xl text-red-500 font-bold font-Poppins">Views</span>
+                    key == "viewCount" && <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Views</span>
                   }
                   {
-                    key == "subscriberCount" && <span className="mb-4 text-xl md:text-3xl text-red-500 font-bold font-Poppins">Subscribers</span>
+                    key == "subscriberCount" && <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Subscribers</span>
                   }
                   {
-                    key == "videoCount" && <span className="mb-4 text-xl md:text-3xl text-red-500 font-bold font-Poppins">Videos</span>
+                    key == "videoCount" && <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Videos</span>
                   }
                   {
                     (key == "viewCount" || key == "subscriberCount" || key == "videoCount") 
@@ -289,7 +283,7 @@ export default function Home() {
                     <MdOutlineArrowRight size={26} />
                     <BsPeopleFill size={26} />
                 </div>
-                <span className="relative mb-4 text-xl md:text-3xl text-red-500 font-bold font-Poppins">Conversion</span>
+                <span className="relative mb-4 text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Conversion Rate</span>
                 <p className="relative font-Inter text-red-500 text-xl font-bold">{((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
                 <div className="absolute top-2 right-2">
                 <TooltipProvider>
@@ -313,7 +307,7 @@ export default function Home() {
                 <div className="mb-3 text-red-500 flex flex-row items-center">
                     <GoHeartFill size={26} />
                 </div>
-                <span className="mb-4 text-xl md:text-3xl text-red-500 font-bold font-Poppins">Likes</span>
+                <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Likes</span>
                 <p className="font-Inter text-red-500 text-xl font-bold">{formatNumber(nbLikes)}</p>
               </div>
             )
@@ -324,8 +318,22 @@ export default function Home() {
                 <div className="mb-3 text-red-500 flex flex-row items-center">
                     <FaComment size={26} />
                 </div>
-                <span className="mb-4 text-xl md:text-3xl text-red-500 font-bold font-Poppins">Comments</span>
+                <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Comments</span>
                 <p className="font-Inter text-red-500 text-xl font-bold">{formatNumber(nbComments)}</p>
+              </div>
+            )
+          }
+          {
+            (stats && nbComments > 0) && (
+              <div className='relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
+                <div className="relative mb-3 text-red-500 flex flex-row items-center">
+                    <FaFire size={26} />
+                </div>
+                <span className="relative mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Engagements</span>
+                <p className="relative font-Inter text-red-500 text-xl font-bold">{formatNumber(nbLikes + nbComments)}</p>
+                <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                  <span className="text-white font-bold text-sm font-Inter">New</span>
+                </div>
               </div>
             )
           }
@@ -336,7 +344,7 @@ export default function Home() {
                     <FaFire size={26} />
                 </div>
                 <div className="relative flex flex-row items-center mb-4">
-                  <span className="text-xl md:text-3xl text-red-500 font-bold font-Poppins">Engagement</span>
+                  <span className="text-lg md:text-2xl text-red-500 text-center font-bold font-Poppins">Engagement Rate</span>
                 </div>
                 <p className="relative font-Inter text-red-500 text-xl font-bold">{(((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
                 <div className="absolute top-2 right-2">
@@ -357,12 +365,12 @@ export default function Home() {
           }
           {
             (stats && mostWatchedVideoId.length > 0) && (
-              <div className='relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
+              <div className='hidden relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                   <FaGrinStars size={26} />
                 </div>
                 <div className="relative flex flex-row items-center mb-4">
-                  <span className="text-xl md:text-3xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
+                  <span className="text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
                 </div>
                 <p className="relative font-Inter text-red-500 text-xl font-bold">{formatNumber(maxViews)} views</p>
                 <div className="absolute top-2 right-2 rounded-2xl overflow-hidden">
@@ -379,12 +387,12 @@ export default function Home() {
           }
           {
             (stats && mostLikedVideoId.length > 0) && (
-              <div className='relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white px-8 py-4 md:py-8 border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
+              <div className='hidden relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white px-8 py-4 md:py-8 border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                   <FaGrinHearts size={26} />
                 </div>
                 <div className="relative flex flex-row items-center mb-4">
-                  <span className="text-xl md:text-3xl text-red-500 text-center font-bold font-Poppins">Most Liked</span>
+                  <span className="text-lg md:text-2xl text-red-500 text-center font-bold font-Poppins">Most Liked</span>
                 </div>
                 <p className="relative font-Inter text-red-500 text-xl font-bold">{formatNumber(maxLikes)} likes</p>
                 <div className="absolute top-2 right-2 rounded-2xl overflow-hidden">
@@ -437,6 +445,47 @@ export default function Home() {
              */
           }
           </div>
+          <div className="flex mt-8 flex-col sm:flex-row items-center justify-center w-full">
+            <div className="w-full sm:w-1/2 mb-8 sm:mb-0 sm:mr-8 ">
+            {
+              (stats && mostWatchedVideoId.length > 0) && (
+                <div className='relative flex pt-4 flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'> 
+                  <div className="relative mb-3 text-red-500 flex flex-row items-center">
+                    <FaGrinStars size={26} />
+                  </div>
+                  <div className="relative flex flex-row items-center mb-2">
+                    <span className="text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
+                  </div>
+                  <p className="relative mb-2 font-Inter text-red-500 text-xl font-bold">{formatNumber(maxViews)} views</p>
+                  <iframe height={100} width={200} className="relative rounded-br-2xl rounded-bl-2xl w-full h-[280px]" src={`https://www.youtube.com/embed/${mostWatchedVideoId}`}></iframe>
+                  <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                    <span className="text-white font-bold text-sm font-Inter">New</span>
+                  </div>
+                </div>
+              )
+            }
+            </div>
+            <div className="w-full sm:w-1/2">
+            {
+              (stats && mostLikedVideoId.length > 0) && (
+                <div className='relative flex pt-4 flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'> 
+                  <div className="relative mb-3 text-red-500 flex flex-row items-center">
+                    <FaGrinHearts size={26} />
+                  </div>
+                  <div className="relative flex flex-row items-center mb-2">
+                    <span className="text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Most Liked</span>
+                  </div>
+                  <p className="relative mb-2 font-Inter text-red-500 text-xl font-bold">{formatNumber(maxLikes)} likes</p>
+                  <iframe height={100} width={200} className="relative rounded-br-2xl rounded-bl-2xl w-full h-[280px]" src={`https://www.youtube.com/embed/${mostLikedVideoId}`}></iframe>
+                  <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                    <span className="text-white font-bold text-sm font-Inter">New</span>
+                  </div>
+                </div>
+              )
+            }
+            </div>
+          </div>
+          
         </div>
       </div>
     </>
