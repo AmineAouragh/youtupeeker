@@ -32,7 +32,7 @@ export default function Home() {
   const router = useRouter()
 
   const { channel_handle } = router.query 
-
+  const [ handle, setHandle ] = useState(null)
   const [ stats, setStats ] = useState(null)
   const [ channelTitle, setChannelTitle ] = useState('')
   const [ imageUrl, setImageUrl ] = useState('')
@@ -45,6 +45,10 @@ export default function Home() {
   const [ mostLikedVideoId, setMostLikedVideoId ] = useState('')
   const [ maxViews, setMaxViews ] = useState(0)
   const [ maxLikes, setMaxLikes ] = useState(0)
+  const [ totalViews, setTotalViews ] = useState(0)
+  const [ totalLikes, setTotalLikes ] = useState(0)
+  const [ tags, setTags ] = useState([])
+
 
   const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_DATA_API_KEY 
 
@@ -88,6 +92,7 @@ export default function Home() {
     let viewsArr = []
 
     let ids = []
+    let allTags = []
     
     do {
 
@@ -123,9 +128,11 @@ export default function Home() {
 
       for (const chunk of videoIdChunks) {
         const idsParam = chunk.join(',');
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&part=statistics,contentDetails&id=${idsParam}`); // 1 quota for each batch of 50 videos
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&part=snippet,statistics,contentDetails&id=${idsParam}`); // 1 quota for each batch of 50 videos
         const videoData = await res.json();
+        console.log(videoData)
         videoData.items.forEach(stat => {
+          allTags.push(stat.snippet.tags)
           likesArr.push(stat.statistics.likeCount)
           viewsArr.push(stat.statistics.viewCount)
           totalLikes += parseInt(stat.statistics.likeCount || 0)
@@ -174,6 +181,8 @@ export default function Home() {
 
     setNbLikes(totalLikes) 
     setNbComments(totalComments)
+
+    console.log(allTags)
  
   }
 
@@ -183,6 +192,8 @@ export default function Home() {
     const data = await response.json()
     console.log(data)
     setStats(data.items[0].statistics)
+    setTotalViews(data.items[0].statistics.viewCount)
+    setTotalLikes(data.items[0].statistics.likeCount)
     setChannelTitle(data.items[0].snippet.title)
     setImageUrl(data.items[0].snippet.thumbnails.high.url)
     const age = getChannelAge(data.items[0].snippet.publishedAt) 
@@ -196,9 +207,9 @@ export default function Home() {
     if (number > 1000000000){
       return (number / 1000000000).toFixed(1) + "B"
     } else if (number > 1000000){
-      return (number / 1000000).toFixed(2) + "M"
+      return (number / 1000000).toFixed(1) + "M"
     } else if (number > 1000) {
-      return (number / 1000).toFixed(2) + "K"
+      return (number / 1000).toFixed(1) + "K"
     } else {
       return number.toLocaleString()
     }
@@ -209,7 +220,7 @@ export default function Home() {
     if (channel_handle) {
         fetchChannelStats(channel_handle)
     }
-  }, [])
+  }, [channel_handle])
 
   return (
     <>
@@ -226,9 +237,12 @@ export default function Home() {
         <div className="mt-16 flex flex-col w-full md:w-3/4 md:px-3 items-start justify-center">
           { stats && 
            <div className="flex flex-row items-center mb-5 justify-between w-full">
-             <div className="text-2xl md:text-4xl flex flex-row items-center font-bold text-slate-700">
+             <div className=" flex flex-row items-center font-bold text-slate-700">
               <Image src={imageUrl} alt="" height={60} width={60} className="border-4 border-red-500 rounded-full mr-2 md:mr-4" />
-              <span className="text-red-500">{channelTitle}:</span>
+              <div className="flex flex-col items-start">
+                <span className="text-xl sm:text-2xl md:text-3xl text-red-500">{channelTitle}:</span>
+                <span className="text-red-500 text-md">@{channel_handle}</span>
+              </div>
              </div>
               <Link href={`https://youtube.com/${channel_handle}`} target="_blank">
                 <button type="button" className="rounded-3xl px-3 py-2 md:px-6 md:py-4 text-lg md:text-2xl flex flex-row items-center bg-red-500 text-white font-bold font-Inter">
@@ -244,7 +258,7 @@ export default function Home() {
                 <p className="text-xl font-semibold text-slate-600 font-Inter">{channelAge} on Youtube - Recent Upload: {mostRecentUpload} ago</p>
               </div>     
           }
-          <div className="w-full grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 mt-5 md:mt-10">
+          <div className="w-full grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 mt-5">
           {
             stats && 
               Object.entries(stats).map(([key, value], index) => (
@@ -259,18 +273,18 @@ export default function Home() {
                     key == "videoCount" && <FaVideo size={26} className="text-red-500 mb-3" />
                   }
                   {
-                    key == "viewCount" && <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Views</span>
+                    key == "viewCount" && <span className="mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Views</span>
                   }
                   {
-                    key == "subscriberCount" && <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Subscribers</span>
+                    key == "subscriberCount" && <span className="mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Subscribers</span>
                   }
                   {
-                    key == "videoCount" && <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Videos</span>
+                    key == "videoCount" && <span className="mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Videos</span>
                   }
                   {
                     (key == "viewCount" || key == "subscriberCount" || key == "videoCount") 
                     && 
-                    <p className="font-Inter text-red-500 text-xl font-bold">{formatNumber(value)}</p>
+                    <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(value)}</p>
                   } 
                 </div>
               ))
@@ -283,8 +297,8 @@ export default function Home() {
                     <MdOutlineArrowRight size={26} />
                     <BsPeopleFill size={26} />
                 </div>
-                <span className="relative mb-4 text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Conversion Rate</span>
-                <p className="relative font-Inter text-red-500 text-xl font-bold">{((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
+                <span className="relative mb-2 text-lg md:text-xl text-center text-red-500 font-bold font-Poppins">Conversion Rate</span>
+                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
                 <div className="absolute top-2 right-2">
                 <TooltipProvider>
                   <Tooltip>
@@ -307,8 +321,8 @@ export default function Home() {
                 <div className="mb-3 text-red-500 flex flex-row items-center">
                     <GoHeartFill size={26} />
                 </div>
-                <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Likes</span>
-                <p className="font-Inter text-red-500 text-xl font-bold">{formatNumber(nbLikes)}</p>
+                <span className="mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Likes</span>
+                <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbLikes)}</p>
               </div>
             )
           }
@@ -318,8 +332,8 @@ export default function Home() {
                 <div className="mb-3 text-red-500 flex flex-row items-center">
                     <FaComment size={26} />
                 </div>
-                <span className="mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Comments</span>
-                <p className="font-Inter text-red-500 text-xl font-bold">{formatNumber(nbComments)}</p>
+                <span className="mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Comments</span>
+                <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbComments)}</p>
               </div>
             )
           }
@@ -329,9 +343,9 @@ export default function Home() {
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                     <FaFire size={26} />
                 </div>
-                <span className="relative mb-4 text-lg md:text-2xl text-red-500 font-bold font-Poppins">Engagements</span>
-                <p className="relative font-Inter text-red-500 text-xl font-bold">{formatNumber(nbLikes + nbComments)}</p>
-                <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                <span className="relative mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Engagements</span>
+                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbLikes + nbComments)}</p>
+                <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
                   <span className="text-white font-bold text-sm font-Inter">New</span>
                 </div>
               </div>
@@ -343,10 +357,10 @@ export default function Home() {
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                     <FaFire size={26} />
                 </div>
-                <div className="relative flex flex-row items-center mb-4">
-                  <span className="text-lg md:text-2xl text-red-500 text-center font-bold font-Poppins">Engagement Rate</span>
+                <div className="relative flex flex-row items-center mb-2">
+                  <span className="text-lg md:text-xl text-red-500 text-center font-bold font-Poppins">Engagement Rate</span>
                 </div>
-                <p className="relative font-Inter text-red-500 text-xl font-bold">{(((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
+                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{(((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
                 <div className="absolute top-2 right-2">
                 <TooltipProvider>
                   <Tooltip>
@@ -450,15 +464,19 @@ export default function Home() {
             {
               (stats && mostWatchedVideoId.length > 0) && (
                 <div className='relative flex pt-4 flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'> 
-                  <div className="relative mb-3 text-red-500 flex flex-row items-center">
-                    <FaGrinStars size={26} />
+                  <div className="flex flex-col items-start w-full px-6 justify-between mb-3">
+                    <div className="flex flex-row items-center mb-2">
+                      <div className="relative mr-3 text-red-500 flex flex-row items-center">
+                        <FaGrinStars size={26} />
+                      </div>
+                      <div className="relative flex mr-4 flex-row items-center">
+                        <span className="text-lg md:text-xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
+                      </div>
+                    </div>
+                    <p className="relative font-Inter text-red-500 text-2xl font-bold">{formatNumber(maxViews)} views ({Math.floor((maxViews/totalViews)*100)}% of all views)</p>
                   </div>
-                  <div className="relative flex flex-row items-center mb-2">
-                    <span className="text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
-                  </div>
-                  <p className="relative mb-2 font-Inter text-red-500 text-xl font-bold">{formatNumber(maxViews)} views</p>
                   <iframe height={100} width={200} className="relative rounded-br-2xl rounded-bl-2xl w-full h-[280px]" src={`https://www.youtube.com/embed/${mostWatchedVideoId}`}></iframe>
-                  <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                  <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
                     <span className="text-white font-bold text-sm font-Inter">New</span>
                   </div>
                 </div>
@@ -469,15 +487,19 @@ export default function Home() {
             {
               (stats && mostLikedVideoId.length > 0) && (
                 <div className='relative flex pt-4 flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'> 
-                  <div className="relative mb-3 text-red-500 flex flex-row items-center">
-                    <FaGrinHearts size={26} />
+                  <div className="flex flex-col items-start w-full px-6 justify-between mb-3">
+                    <div className="flex flex-row items-center mb-2">
+                      <div className="relative mr-3 text-red-500 flex flex-row items-center">
+                        <FaGrinHearts size={26} />
+                      </div>
+                      <div className="relative flex mr-4 flex-row items-center">
+                        <span className="text-lg md:text-xl text-center text-red-500 font-bold font-Poppins">Most Liked</span>
+                      </div>
+                    </div>
+                    <p className="relative font-Inter text-red-500 text-2xl font-bold">{formatNumber(maxLikes)} likes ({Math.floor((maxLikes/nbLikes)*100)}% of all likes)</p>
                   </div>
-                  <div className="relative flex flex-row items-center mb-2">
-                    <span className="text-lg md:text-2xl text-center text-red-500 font-bold font-Poppins">Most Liked</span>
-                  </div>
-                  <p className="relative mb-2 font-Inter text-red-500 text-xl font-bold">{formatNumber(maxLikes)} likes</p>
                   <iframe height={100} width={200} className="relative rounded-br-2xl rounded-bl-2xl w-full h-[280px]" src={`https://www.youtube.com/embed/${mostLikedVideoId}`}></iframe>
-                  <div className="absolute top-0 left-0 px-2 py-1 rounded-tl-2xl rounded-br-2xl bg-red-500">
+                  <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
                     <span className="text-white font-bold text-sm font-Inter">New</span>
                   </div>
                 </div>
