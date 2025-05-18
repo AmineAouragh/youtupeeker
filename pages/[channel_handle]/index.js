@@ -27,7 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-export default function Home() {
+export default function ChannelAnalyticsPage() {
 
   const router = useRouter()
 
@@ -47,7 +47,6 @@ export default function Home() {
   const [ maxLikes, setMaxLikes ] = useState(0)
   const [ totalViews, setTotalViews ] = useState(0)
   const [ totalLikes, setTotalLikes ] = useState(0)
-  const [ tags, setTags ] = useState([])
 
 
   const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_DATA_API_KEY 
@@ -92,7 +91,6 @@ export default function Home() {
     let viewsArr = []
 
     let ids = []
-    let allTags = []
     
     do {
 
@@ -132,7 +130,6 @@ export default function Home() {
         const videoData = await res.json();
         console.log(videoData)
         videoData.items.forEach(stat => {
-          allTags.push(stat.snippet.tags)
           likesArr.push(stat.statistics.likeCount)
           viewsArr.push(stat.statistics.viewCount)
           totalLikes += parseInt(stat.statistics.likeCount || 0)
@@ -181,8 +178,6 @@ export default function Home() {
 
     setNbLikes(totalLikes) 
     setNbComments(totalComments)
-
-    console.log(allTags)
  
   }
 
@@ -215,7 +210,7 @@ export default function Home() {
     }
   }
 
-  useEffect( () => {
+  useEffect(() => {
     console.log(channel_handle)
     if (channel_handle) {
         fetchChannelStats(channel_handle)
@@ -262,7 +257,7 @@ export default function Home() {
           {
             stats && 
               Object.entries(stats).map(([key, value], index) => (
-                <div key={index} className={`${key == "hiddenSubscriberCount" && "hidden"} flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center`}>
+                <div key={index} className={`${key == "hiddenSubscriberCount" && "hidden"} flex flex-col bg-gradient-to-br from-red-200 via-white to-white border border-red-200 shadow-md rounded-2xl px-8 py-4 md:py-8 justify-center items-center`}>
                   {
                     key == "viewCount" && <FaEye size={26} className="text-red-500 mb-3" />
                   }
@@ -284,22 +279,63 @@ export default function Home() {
                   {
                     (key == "viewCount" || key == "subscriberCount" || key == "videoCount") 
                     && 
-                    <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(value)}</p>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(value)}</p>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="p-2 opacity-90 bg-red-500">
+                            <p className="font-Inter text-lg font-bold">{value}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                   } 
                 </div>
               ))
           }
           {
             stats && (
-              <div className='relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
+              <div className='relative flex flex-col bg-gradient-to-br from-red-200 via-white to-white border border-red-200 shadow-md rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                     <FaEye size={26} />
                     <MdOutlineArrowRight size={26} />
                     <BsPeopleFill size={26} />
                 </div>
                 <span className="relative mb-2 text-lg md:text-xl text-center text-red-500 font-bold font-Poppins">Conversion Rate</span>
-                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
-                <div className="absolute top-2 right-2">
+                <p className="relative mb-2 font-Inter text-red-500 text-2xl md:text-3xl font-bold">{((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
+                <span className="relative text-red-600 font-Inter bg-red-50 px-2 py-1 text-lg font-bold">
+                  {
+                    (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) > 0 && (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) <= 0.25
+                    && 
+                    "Very Low"
+                  }
+                  {
+                    (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) > 0.25 && (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) <= 0.75
+                    && 
+                    "Low"
+                  }
+                  {
+                    (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) > 0.75 && (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) <= 2
+                    && 
+                    "Average"
+                  }
+                  {
+                    (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) > 2 && (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) <= 4
+                    && 
+                    "Good"
+                  }
+                  {
+                    (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) > 4 && (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) <= 6
+                    && 
+                    "Great"
+                  }
+                  {
+                    (((Number(stats.subscriberCount) / Number(stats.viewCount)) * 100).toFixed(2)) > 6 
+                    && 
+                    "Excellent"
+                  }
+                </span>
+                <div className="absolute top-2 hidden md:flex right-2">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -317,18 +353,27 @@ export default function Home() {
           }
           {
             (stats && nbLikes > 0) && (
-              <div className='flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
+              <div className='flex flex-col bg-gradient-to-br from-red-200 via-white to-white border border-red-200 shadow-md rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
                 <div className="mb-3 text-red-500 flex flex-row items-center">
                     <GoHeartFill size={26} />
                 </div>
                 <span className="mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Likes</span>
-                <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbLikes)}</p>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <p className="font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbLikes)}</p>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="p-2 opacity-90 bg-red-500">
+                      <p className="font-Inter text-lg font-bold">{nbLikes}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             )
           }
           {
             (stats && nbComments > 0) && (
-              <div className='flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
+              <div className='flex flex-col bg-gradient-to-br from-red-200 via-white to-white border border-red-200 shadow-md rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
                 <div className="mb-3 text-red-500 flex flex-row items-center">
                     <FaComment size={26} />
                 </div>
@@ -338,30 +383,38 @@ export default function Home() {
             )
           }
           {
-            (stats && nbComments > 0) && (
-              <div className='relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
-                <div className="relative mb-3 text-red-500 flex flex-row items-center">
-                    <FaFire size={26} />
-                </div>
-                <span className="relative mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Engagements</span>
-                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbLikes + nbComments)}</p>
-                <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
-                  <span className="text-white font-bold text-sm font-Inter">New</span>
-                </div>
-              </div>
-            )
-          }
-          {
             stats && (
-              <div className='relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
+              <div className='relative flex flex-col bg-gradient-to-br from-red-200 via-white to-white border border-red-200 shadow-md rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                     <FaFire size={26} />
                 </div>
                 <div className="relative flex flex-row items-center mb-2">
                   <span className="text-lg md:text-xl text-red-500 text-center font-bold font-Poppins">Engagement Rate</span>
                 </div>
-                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{(((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
-                <div className="absolute top-2 right-2">
+                <p className="relative mb-2 font-Inter text-red-500 text-2xl md:text-3xl font-bold">{(((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)}%</p>
+                <span className="relative text-red-600 font-Inter bg-red-50 px-2 py-1 text-lg font-bold">
+                  {
+                    ((((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)) > 0 && (((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2) <= 0.5
+                    && 
+                    "Very Low"
+                  }
+                  {
+                    ((((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)) > 0.5 && (((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2) <= 1.5
+                    && 
+                    "Low"
+                  }
+                  {
+                    ((((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)) > 1.5 && (((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2) <= 3
+                    && 
+                    "Average"
+                  }
+                  {
+                    ((((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2)) > 3 && (((nbLikes + nbComments) / Number(stats.viewCount)) * 100).toFixed(2) <= 5
+                    && 
+                    "Good"
+                  }
+                </span>
+                <div className="absolute top-2 right-2 hidden md:flex">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -378,8 +431,22 @@ export default function Home() {
             )
           }
           {
+            (stats && nbComments > 0) && (
+              <div className='relative flex flex-col bg-gradient-to-br from-red-200 via-white to-white border border-red-200 shadow-md rounded-2xl px-8 py-4 md:py-8 justify-center items-center'>
+                <div className="relative mb-3 text-red-500 flex flex-row items-center">
+                    <FaFire size={26} />
+                </div>
+                <span className="relative mb-2 text-lg md:text-xl text-red-500 font-bold font-Poppins">Engagements</span>
+                <p className="relative font-Inter text-red-500 text-2xl md:text-3xl font-bold">{formatNumber(nbLikes + nbComments)}</p>
+                <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
+                  <span className="text-white font-bold text-sm font-Inter">New</span>
+                </div>
+              </div>
+            )
+          }
+          {
             (stats && mostWatchedVideoId.length > 0) && (
-              <div className='hidden relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
+              <div className='hidden relative flex flex-col bg-gradient-to-b from-red-100 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                   <FaGrinStars size={26} />
                 </div>
@@ -401,7 +468,7 @@ export default function Home() {
           }
           {
             (stats && mostLikedVideoId.length > 0) && (
-              <div className='hidden relative flex flex-col bg-gradient-to-b from-red-50 via-white to-white px-8 py-4 md:py-8 border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
+              <div className='hidden relative flex flex-col bg-gradient-to-b from-red-100 via-white to-white px-8 py-4 md:py-8 border border-red-200 shadow-sm rounded-2xl justify-center items-center'>
                 <div className="relative mb-3 text-red-500 flex flex-row items-center">
                   <FaGrinHearts size={26} />
                 </div>
@@ -463,17 +530,20 @@ export default function Home() {
             <div className="w-full sm:w-1/2 mb-8 sm:mb-0 sm:mr-8 ">
             {
               (stats && mostWatchedVideoId.length > 0) && (
-                <div className='relative flex pt-4 flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'> 
-                  <div className="flex flex-col items-start w-full px-6 justify-between mb-3">
+                <div className='relative flex pt-4 flex-col bg-gradient-to-br from-red-100 via-white to-white border border-red-200 shadow-md rounded-2xl justify-center items-center'> 
+                  <div className="flex flex-col items-center w-full px-6 justify-between mb-3">
                     <div className="flex flex-row items-center mb-2">
                       <div className="relative mr-3 text-red-500 flex flex-row items-center">
-                        <FaGrinStars size={26} />
+                        <FaGrinStars size={22} />
                       </div>
                       <div className="relative flex mr-4 flex-row items-center">
                         <span className="text-lg md:text-xl text-center text-red-500 font-bold font-Poppins">Most Watched</span>
                       </div>
                     </div>
-                    <p className="relative font-Inter text-red-500 text-2xl font-bold">{formatNumber(maxViews)} views ({Math.floor((maxViews/totalViews)*100)}% of all views)</p>
+                    <div className="relative font-Inter text-red-500 flex flex-col justify-center items-center">
+                      <p className="font-bold text-2xl">{formatNumber(maxViews)} views</p>
+                      <p className="text-lg font-semibold">({Math.floor((maxViews/totalViews)*100)}% of all views)</p>
+                    </div>
                   </div>
                   <iframe height={100} width={200} className="relative rounded-br-2xl rounded-bl-2xl w-full h-[280px]" src={`https://www.youtube.com/embed/${mostWatchedVideoId}`}></iframe>
                   <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
@@ -486,17 +556,20 @@ export default function Home() {
             <div className="w-full sm:w-1/2">
             {
               (stats && mostLikedVideoId.length > 0) && (
-                <div className='relative flex pt-4 flex-col bg-gradient-to-b from-red-50 via-white to-white border border-red-200 shadow-sm rounded-2xl justify-center items-center'> 
-                  <div className="flex flex-col items-start w-full px-6 justify-between mb-3">
+                <div className='relative flex pt-4 flex-col bg-gradient-to-br from-red-100 via-white to-white border border-red-200 shadow-md rounded-2xl justify-center items-center'> 
+                  <div className="flex flex-col items-center w-full px-6 justify-between mb-3">
                     <div className="flex flex-row items-center mb-2">
                       <div className="relative mr-3 text-red-500 flex flex-row items-center">
-                        <FaGrinHearts size={26} />
+                        <FaGrinHearts size={22} />
                       </div>
                       <div className="relative flex mr-4 flex-row items-center">
                         <span className="text-lg md:text-xl text-center text-red-500 font-bold font-Poppins">Most Liked</span>
                       </div>
                     </div>
-                    <p className="relative font-Inter text-red-500 text-2xl font-bold">{formatNumber(maxLikes)} likes ({Math.floor((maxLikes/nbLikes)*100)}% of all likes)</p>
+                    <div className="flex flex-col relative font-Inter text-red-500 justify-center items-center">
+                      <p className="text-2xl font-bold">{formatNumber(maxLikes)} likes</p>
+                      <p className="text-lg font-semibold">({Math.floor((maxLikes/nbLikes)*100)}% of all likes)</p>
+                    </div>
                   </div>
                   <iframe height={100} width={200} className="relative rounded-br-2xl rounded-bl-2xl w-full h-[280px]" src={`https://www.youtube.com/embed/${mostLikedVideoId}`}></iframe>
                   <div className="absolute top-0 right-0 px-2 py-1 rounded-tr-2xl rounded-bl-2xl bg-red-500">
