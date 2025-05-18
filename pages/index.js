@@ -43,9 +43,9 @@ export default function Home() {
           </button>
         </div>
         <div className="mt-8 flex flex-row items-center">
-          <button type="button" onClick={() => fetchChannelStats("MrBeast")} className="rounded-full mr-2 font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">MrBeast</button>
-          <button type="button" onClick={() => fetchChannelStats("theRadBrad")} className="rounded-full mr-2 font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">theRadBrad</button>
-          <button type="button" onClick={() => fetchChannelStats("freecodecamp")} className="rounded-full font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">freecodecamp</button>
+          <button type="button" onClick={() => router.push("/MrBeast")} className="rounded-full mr-2 font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">MrBeast</button>
+          <button type="button" onClick={() => router.push("/theRadBrad")} className="rounded-full mr-2 font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">theRadBrad</button>
+          <button type="button" onClick={() => router.push("/freecodecamp")} className="rounded-full font-Inter bg-gray-100 text-gray-700 font-semibold px-3 py-1">freecodecamp</button>
         </div>
       </div>
     </>
